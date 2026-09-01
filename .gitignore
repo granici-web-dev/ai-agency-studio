@@ -10,8 +10,13 @@
 *.csv
 *.xlsx
 projects/**/exporte/
-projects/**/nachweise/**/*.png
-projects/**/nachweise/**/*.jpg
+
+# Nachweise sind Belege, keine Quellen: Screenshots und volle Lighthouse-Berichte
+# werden bei jedem Lauf neu erzeugt und blaehen die Historie dauerhaft auf.
+# Die README im jeweiligen Ordner bleibt versioniert, sie ist das Verzeichnis.
+**/nachweise/**/*.png
+**/nachweise/**/*.jpg
+**/nachweise/**/*.json
 
 .DS_Store
 .idea/
