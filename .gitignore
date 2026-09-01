@@ -1,0 +1,24 @@
+# Zugangsdaten — niemals ins Repository
+.env
+.env.*
+!.env.example
+
+# Kundendaten mit Personenbezug — gehören in eine zugriffsbeschränkte Ablage,
+# nicht ins Repository (CLAUDE.md §2.7, .claude/standards/PRINCIPLES.md, DSGVO).
+# Diese Liste ist die zweite Verteidigungslinie, nicht die erste: solche Dateien
+# kommen gar nicht erst in den Ordner.
+*.csv
+*.xlsx
+projects/**/exporte/
+projects/**/nachweise/**/*.png
+projects/**/nachweise/**/*.jpg
+
+.DS_Store
+.idea/
+
+# Abhängigkeiten
+node_modules/
+token.json
+
+# Maschinelle Artefakte — Playwright-Sitzungslogs und Screenshots
+.playwright-mcp/

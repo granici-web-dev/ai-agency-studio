@@ -1,0 +1,21 @@
+{
+  "name": "mcp-google-forms",
+  "version": "0.1.0",
+  "description": "MCP server for the Google Forms API — create forms, add questions, read responses.",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "mcp-google-forms": "./index.js"
+  },
+  "scripts": {
+    "auth": "node bootstrap-auth.js",
+    "check": "node --check index.js && node --check auth.js && node --check bootstrap-auth.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "google-auth-library": "^9.15.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

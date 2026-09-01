@@ -1,0 +1,12 @@
+{
+  "name": "agency-leadbot",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Telegram-Bot für Flow A, Schritt A1 — Übergabe eines Kontakts vom Vertrieb",
+  "scripts": {
+    "bot": "node bot.mjs",
+    "selftest": "node selftest.mjs"
+  },
+  "engines": { "node": ">=18" }
+}

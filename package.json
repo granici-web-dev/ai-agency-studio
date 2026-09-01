@@ -1,0 +1,17 @@
+{
+  "name": "agency-team",
+  "private": true,
+  "description": "Werkzeuge der Agentur — Lead-Bot, CRM-Provisionierung, Trello-Spiegel, Sicherung. Keine Abhängigkeiten, Node >= 18.",
+  "scripts": {
+    "bot": "node tools/leadbot/bot.mjs",
+    "selftest": "node tools/leadbot/selftest.mjs",
+    "test": "node tools/leadbot/selftest.mjs && node tools/leadbot/test-nachreichen.mjs && node tools/leadbot/test-idempotenz.mjs",
+    "test:offline": "node tools/leadbot/selftest.mjs && node tools/leadbot/test-nachreichen.mjs",
+    "crm:provision": "node tools/twenty-provision/provision.mjs",
+    "spiegel": "node tools/trello-spiegel/spiegel.mjs",
+    "sichern": "node tools/twenty-backup/sichern.mjs --test",
+    "sichern:status": "node tools/twenty-backup/sichern.mjs --status",
+    "auslagern": "node tools/twenty-backup/auslagern.mjs",
+    "auslagern:status": "node tools/twenty-backup/auslagern.mjs --status"
+  }
+}

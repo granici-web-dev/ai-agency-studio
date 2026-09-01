@@ -1,0 +1,1228 @@
+/*
+Theme Name: Agentur Basis
+Theme URI: https://example.invalid/agentur-basis
+Author: Agentur
+Description: Basis-Blocktheme für Websites kleiner Betriebe — Friseur, Praxis, Handwerk. Ein Theme, mehrere Style Variations. Keine externen Aufrufe, Schriften lokal, keine Seitenbaukästen.
+Requires at least: 6.6
+Tested up to: 6.8
+Requires PHP: 8.1
+Version: 0.1.0
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: agentur-basis
+Tags: block-patterns, full-site-editing, accessibility-ready, translation-ready
+*/
+
+
+/* --- Abstandsstufen ----------------------------------------------------
+   Die Stufen stehen in theme.json, aber WordPress benutzt sie nicht: der
+   Kern erzeugt aus `settings.spacing.spacingScale` eine eigene Leiter mit
+   denselben Slugs und schreibt damit `spacingSizes` der Theme-Ebene leer.
+   Geprüft am 2026-08-17 über WP_Theme_JSON_Resolver::get_merged_data() —
+   die Herkunft „theme" kommt leer heraus, sowohl mit `steps: 0` als auch
+   ganz ohne `spacingScale`.
+
+   Folge: die Abschnitte liefen mit 2,25rem statt mit dem, was in theme.json
+   stand. Im Markup steht die richtige Variable, sie löste nur zu etwas
+   anderem auf — deshalb fällt es beim Lesen des Codes nicht auf, sondern
+   erst beim Nachmessen im Browser.
+
+   Also werden die Variablen hier gesetzt. Doppeltes :root, damit die Regel
+   die Inline-Ausgabe der Global Styles schlägt, unabhängig davon, in
+   welcher Reihenfolge die Stylesheets landen. */
+
+:root:root {
+	--wp--preset--spacing--20: 0.5rem;
+	--wp--preset--spacing--30: 0.75rem;
+	--wp--preset--spacing--40: 1rem;
+	--wp--preset--spacing--50: 1.75rem;
+	--wp--preset--spacing--60: clamp(3.5rem, 6vw, 4.6875rem);
+	--wp--preset--spacing--70: clamp(4.5rem, 8vw, 6rem);
+}
+
+/* --- Rollen statt Farben ------------------------------------------------
+   Am 2026-08-17 ist das Theme von einer dunklen auf eine helle Fläche
+   gewechselt (Vorlage: travelperk.com). Dabei kippte jede Regel, die
+   „Grund" als Schriftfarbe benutzte: auf Schwarz war das richtig, auf Creme
+   heißt es cremefarbene Schrift auf gelber Fläche — 1,24:1, unlesbar.
+
+   Betroffen waren zwanzig Regeln. Deshalb stehen die Rollen jetzt hier an
+   einer Stelle. Eine spätere dunkle Variante ändert diesen Block, nicht
+   zwanzig Regeln — und niemand muss sich merken, welche davon die Umkehr
+   meinten und welche wörtlich die Grundfarbe.
+
+   `--ton-linie-stark` und `--ton-leise` stehen bewusst NICHT in der Palette
+   von theme.json: der Inhaber soll sie nicht auswählen können. Sie sind
+   Bauteile, keine Gestaltungsentscheidung. */
+
+:root {
+	/* Schrift auf einer Fläche in der Markenfarbe. Auf Gelb gemessen: 13,61:1 */
+	--ton-auf-akzent: var(--wp--preset--color--schrift-stark);
+	/* Linie, die etwas begrenzt statt nur zu gliedern — 3,03:1 auf Grund */
+	--ton-linie-stark: #8E8E7C;
+	/* Kleingedrucktes, das noch lesbar sein muss — 5,53:1 auf Grund */
+	--ton-leise: #63635A;
+
+	/* Harte Kanten. Die Vorlage (lamborghini.com) kennt keine runden Karten,
+	   keine weichen Schatten, keine Verläufe — nur Flächen, Haarlinien und
+	   einen Knopf. Die Variablen bleiben stehen, damit eine Variante sie
+	   ändern kann, ohne dass jemand zwanzig Regeln sucht. */
+	--radius-flaeche: 0;
+	--radius-knopf: 0;
+
+	/* Schrift auf einer dunklen Bühne. */
+	--ton-auf-buehne: #F2F2F0;
+	--ton-auf-buehne-leise: #A6A6A2;
+}
+
+
+/* --- Bühnen und Bänder -------------------------------------------------
+   Der Aufbau der Seite, seit 2026-08-17 nach lamborghini.com.
+
+   Vorher lagen sechs gleich gebaute Abschnitte gestapelt: Überschrift,
+   Text, Bild daneben. Sechsmal derselbe Takt — deshalb las sich die Seite
+   wie ein Prospekt und nicht wie ein Ort.
+
+   Jetzt wechseln sich zwei Bauteile ab, am lebenden Vorbild abgemessen:
+
+     BÜHNE   volle Höhe, ein Bild, eine Aussage, ein Knopf   (100–113 vh)
+     BAND    kurze ruhige Leiste: Bezeichnung und Verweis    (26–32 vh)
+
+   Die Bühne trägt, das Band ordnet. Der Wechsel ist der Rhythmus; zwei
+   Bühnen hintereinander ohne Band dazwischen nehmen einander die Wirkung. */
+
+.buehne {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	/* svh statt vh: auf dem Telefon rechnet vh die Adressleiste mit, die
+	   beim Scrollen verschwindet — die erste Bühne wäre höher als der
+	   Bildschirm und der Knopf läge darunter. */
+	min-height: 100svh;
+	padding-block: var(--wp--preset--spacing--60);
+	overflow: hidden;
+}
+
+/* Das Bild liegt hinter dem Text, nicht daneben. Als <img> und nicht als
+   background-image, damit srcset, Maße und fetchpriority greifen — ein
+   Hintergrundbild kann der Browser nicht in Größen anbieten und Lighthouse
+   sieht es nicht als LCP. */
+.buehne-bild {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	margin: 0;
+}
+
+.buehne-bild img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+/* Der Schleier. Ohne ihn hängt die Lesbarkeit vom Foto ab, und beim
+   nächsten Bild des Inhabers steht weiße Schrift auf einer weißen Wand.
+   Von unten nach oben, weil der Text unten sitzt. */
+.buehne::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	background: linear-gradient(to top, rgba(13, 13, 13, 0.92) 0%, rgba(13, 13, 13, 0.72) 38%, rgba(13, 13, 13, 0.35) 72%, rgba(13, 13, 13, 0.2) 100%);
+	pointer-events: none;
+}
+
+.buehne > *:not(.buehne-bild) {
+	position: relative;
+	z-index: 2;
+}
+
+/* --- Band --------------------------------------------------------------
+   Die ruhige Leiste zwischen zwei Bühnen: links die Bezeichnung, rechts
+   der Verweis. Sie ist bewusst niedrig — sie soll Luft schaffen und den
+   Abschnitt benennen, nicht selbst auftreten. */
+
+.band {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 1rem 2rem;
+	padding-block: clamp(2.5rem, 6vw, 4.5rem);
+	border-bottom: 1px solid var(--wp--preset--color--linie);
+}
+
+.band > * {
+	margin: 0;
+}
+
+.band-name {
+	font-family: var(--wp--preset--font-family--schild);
+	font-size: var(--wp--preset--font-size--xx-large);
+	font-weight: 800;
+	line-height: 1;
+	letter-spacing: -0.01em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--schrift-stark);
+	hyphens: none;
+}
+
+
+/* --- Auf der dunklen Bühne ---------------------------------------------
+   Dieselbe Mechanik wie bei der Markenfläche: die Umkehr hängt am
+   Hintergrund, nicht an einer Klasse, die nur in unseren Mustern steht.
+   Wer im Editor „Bühne" als Hintergrund wählt, bekommt die passende
+   Schrift dazu, ohne etwas zu wissen. */
+
+.buehne,
+.auf-buehne,
+.has-buehne-background-color {
+	color: var(--ton-auf-buehne);
+}
+
+.buehne h1, .buehne h2, .buehne h3, .buehne h4, .buehne h5, .buehne h6,
+.auf-buehne h1, .auf-buehne h2, .auf-buehne h3, .auf-buehne h4, .auf-buehne h5, .auf-buehne h6,
+.has-buehne-background-color h1, .has-buehne-background-color h2,
+.has-buehne-background-color h3, .has-buehne-background-color h4,
+.has-buehne-background-color h5, .has-buehne-background-color h6 {
+	color: var(--ton-auf-buehne);
+}
+
+.buehne p, .buehne li, .buehne figcaption,
+.auf-buehne p, .auf-buehne li, .auf-buehne figcaption,
+.has-buehne-background-color p, .has-buehne-background-color li,
+.has-buehne-background-color figcaption {
+	color: var(--ton-auf-buehne);
+}
+
+.buehne .gedaempft,
+.auf-buehne .gedaempft,
+.has-buehne-background-color .gedaempft {
+	color: var(--ton-auf-buehne-leise);
+}
+
+/* Verweise auf der Bühne: Gelb trägt hier, weil der Grund dunkel ist.
+   Auf dem hellen Grund gilt weiterhin das Gegenteil. */
+.buehne a:not(.wp-block-button__link),
+.auf-buehne a:not(.wp-block-button__link),
+.has-buehne-background-color a:not(.wp-block-button__link) {
+	color: var(--wp--preset--color--akzent);
+}
+
+.buehne .strich-verweis a::before,
+.auf-buehne .strich-verweis a::before {
+	background-color: var(--wp--preset--color--akzent);
+}
+
+.buehne a:focus-visible,
+.auf-buehne a:focus-visible {
+	outline-color: var(--ton-auf-buehne);
+}
+
+/* Alles Gestalterische steht in theme.json. Hier steht nur, was theme.json
+   nicht ausdrücken kann. Wächst diese Datei über ein paar Dutzend Zeilen,
+   ist das ein Befund und kein Zwischenstand. */
+
+/* --- Sprungmarke für Tastatur und Screenreader ------------------------- */
+
+.sprung-zum-inhalt {
+	position: absolute;
+	left: -9999px;
+	z-index: 999;
+	padding: 1rem 1.5rem;
+	background: var(--wp--preset--color--akzent);
+	color: var(--ton-auf-akzent);
+	border-radius: var(--radius-knopf);
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 500;
+	text-decoration: none;
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+}
+
+.sprung-zum-inhalt:focus {
+	left: 1rem;
+	top: 1rem;
+}
+
+/* --- Kopfzeile klebt mit ----------------------------------------------
+   Bei allen drei Referenzen bleibt der Buchungsknopf auf jeder Höhe
+   erreichbar. Ohne backdrop-filter, der kostet auf schwachen Geräten
+   mehr, als er aussieht. */
+
+.kopf-klebt {
+	position: sticky;
+	top: 0;
+	z-index: 100;
+	background-color: var(--wp--preset--color--grund);
+	border-bottom: 1px solid var(--wp--preset--color--linie);
+}
+
+/* --- Verweis mit Strich davor ------------------------------------------
+   „— MEHR ERFAHREN". Der Strich ist Dekoration und wird deshalb vor
+   Screenreadern versteckt. */
+
+.strich-verweis a,
+a.strich-verweis {
+	display: inline-flex;
+	align-items: center;
+	gap: 1rem;
+	font-family: var(--wp--preset--font-family--text);
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	text-decoration: none;
+	color: var(--wp--preset--color--schrift-stark);
+}
+
+/* Der Strich lief bis zum Wechsel auf Hell in der Markenfarbe. Auf Creme
+   sind das 1,24:1 — der Strich verschwand, der Verweis sah aus wie
+   eingerückter Text. Er trägt jetzt die kräftige Linienfarbe. */
+.strich-verweis a::before,
+a.strich-verweis::before {
+	content: "";
+	width: 2.25rem;
+	height: 2px;
+	background-color: var(--ton-linie-stark);
+	transition: width 0.25s ease, background-color 0.25s ease;
+}
+
+.strich-verweis a:hover::before,
+a.strich-verweis:hover::before {
+	background-color: var(--wp--preset--color--schrift-stark);
+}
+
+.strich-verweis a:hover::before,
+a.strich-verweis:hover::before {
+	width: 3.5rem;
+}
+
+/* --- Bilder ------------------------------------------------------------
+   Nie über den Rahmen hinaus, nie verzerrt. Das Seitenverhältnis kommt
+   aus dem Muster, der Ausschnitt aus object-fit — damit sitzt auch ein
+   schief geknipstes Handyfoto des Inhabers sauber im Raster. */
+
+img {
+	max-width: 100%;
+	height: auto;
+}
+
+.wp-block-image.ist-zugeschnitten img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* Runde Ecken an allen Bildern. Auf der dunklen Fläche brauchte es sie
+   nicht — dort begrenzte der Kontrast das Bild. Auf Creme steht ein hartes
+   Rechteck als Fremdkörper in einer Seite, deren Knöpfe und Felder rund
+   sind. */
+.wp-block-image img {
+	border-radius: var(--radius-flaeche);
+}
+
+
+/* --- Marke im Kopf -----------------------------------------------------
+   Höhe statt Breite steuern: die Wortmarke ist breit und flach, eine
+   Breitenangabe würde sie auf dem Telefon über die Zeile schieben. */
+
+.marke {
+	display: inline-flex;
+	align-items: center;
+	color: var(--wp--preset--color--schrift-stark);
+	text-decoration: none;
+	line-height: 0;
+}
+
+.marke-zeichen {
+	height: 1.6rem;
+	width: auto;
+	display: block;
+}
+
+@media (max-width: 781px) {
+	.marke-zeichen {
+		height: 1.25rem;
+	}
+}
+
+
+/* --- Preisliste --------------------------------------------------------
+   Zeile mit Leistung links, Preis rechts, dünner Strich darunter. Ersetzt
+   die Kachelreihe: dieselbe Fläche zeigt acht Positionen statt drei. */
+
+.preiszeile {
+	padding-block: 0.85rem;
+	border-bottom: 1px solid var(--wp--preset--color--linie);
+	align-items: baseline;
+	gap: 1.5rem;
+}
+
+.preiszeile > p {
+	margin: 0;
+}
+
+/* Preise mit Tabellenziffern: sonst tanzen 16 € und 22 € in der Spalte
+   gegeneinander, weil die 1 schmaler läuft als die 2. */
+.preis {
+	font-weight: 500;
+	font-variant-numeric: tabular-nums;
+	color: var(--wp--preset--color--schrift-stark);
+	white-space: nowrap;
+}
+
+
+/* --- Auf der Markenfarbe -----------------------------------------------
+   Wird eine Fläche mit der Markenfarbe hinterlegt, muss die Schrift kippen.
+
+   Diese Regeln hingen bis 2026-08-17 an einer handgeschriebenen Klasse
+   `.auf-akzent`, die nur in unseren eigenen Mustern steht. Der Detektor hat
+   das angemerkt, der Live-Scan hielt es für einen Fehlalarm, und die Probe
+   gab dem Detektor recht: eine Gruppe, der jemand im Editor einfach den
+   Akzent als Hintergrund gibt, bekam Überschriften mit 1,20:1 und Fließtext
+   mit 1,26:1. Der Inhaber kann das mit zwei Klicks bauen, und es fällt
+   niemandem auf, weil die ausgelieferte Seite in Ordnung ist.
+
+   Deshalb hängt die Umkehr jetzt am Hintergrund selbst. Wer die Farbe
+   wählt, bekommt die passende Schrift dazu — ohne etwas zu wissen. */
+
+.auf-akzent,
+.has-akzent-background-color,
+.has-akzent-tief-background-color {
+	color: var(--ton-auf-akzent);
+}
+
+.auf-akzent h1,
+.auf-akzent h2,
+.auf-akzent h3,
+.auf-akzent h4,
+.auf-akzent h5,
+.auf-akzent h6,
+.has-akzent-background-color h1,
+.has-akzent-background-color h2,
+.has-akzent-background-color h3,
+.has-akzent-background-color h4,
+.has-akzent-background-color h5,
+.has-akzent-background-color h6,
+.has-akzent-tief-background-color h1,
+.has-akzent-tief-background-color h2,
+.has-akzent-tief-background-color h3,
+.has-akzent-tief-background-color h4,
+.has-akzent-tief-background-color h5,
+.has-akzent-tief-background-color h6 {
+	color: var(--ton-auf-akzent);
+}
+
+.auf-akzent p,
+.auf-akzent li,
+.auf-akzent dt,
+.auf-akzent dd,
+.auf-akzent figcaption,
+.has-akzent-background-color p,
+.has-akzent-background-color li,
+.has-akzent-background-color dt,
+.has-akzent-background-color dd,
+.has-akzent-background-color figcaption,
+.has-akzent-tief-background-color p,
+.has-akzent-tief-background-color li,
+.has-akzent-tief-background-color dt,
+.has-akzent-tief-background-color dd,
+.has-akzent-tief-background-color figcaption {
+	color: var(--ton-auf-akzent);
+}
+
+.auf-akzent .strich-verweis a,
+.auf-akzent a.strich-verweis,
+.has-akzent-background-color .strich-verweis a,
+.has-akzent-background-color a.strich-verweis {
+	color: var(--ton-auf-akzent);
+}
+
+.auf-akzent .strich-verweis a::before,
+.auf-akzent a.strich-verweis::before,
+.has-akzent-background-color .strich-verweis a::before,
+.has-akzent-background-color a.strich-verweis::before {
+	background-color: var(--ton-auf-akzent);
+}
+
+.auf-akzent a,
+.auf-akzent button,
+.auf-akzent [tabindex]:focus-visible,
+.has-akzent-background-color a,
+.has-akzent-background-color button,
+.has-akzent-background-color [tabindex]:focus-visible {
+	outline-color: var(--ton-auf-akzent);
+}
+
+/* Bilder auf der Farbfläche einen Hauch abdunkeln, damit das Schwarzweiß
+   nicht neben dem Gelb ausbleicht. */
+.auf-akzent .wp-block-image img,
+.has-akzent-background-color .wp-block-image img {
+	filter: contrast(1.06);
+}
+
+/* --- Tafel -------------------------------------------------------------
+   Ein eingerückter Abschnitt in der Markenfarbe, der wie ein Blatt auf dem
+   Papier liegt. Er braucht eigenen Abstand nach außen: die randlosen
+   Abschnitte holen ihren Rhythmus aus dem Innenabstand, eine Tafel kann das
+   nicht — ihr Innenabstand gehört zur Fläche selbst. */
+
+.tafel {
+	margin-block: var(--wp--preset--spacing--60);
+}
+
+/* --- Statusleiste ------------------------------------------------------
+   Die drei Angaben, wegen derer jemand abends an der Haltestelle sucht:
+   offen bis wann, wo, welche Nummer. Eine Zeile, direkt unter dem Titel,
+   statt auf 77 % Scrolltiefe. Die Nummer ist wählbar. */
+
+.statusleiste {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 0.5rem 1.25rem;
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	hyphens: none;
+}
+
+.statusleiste > * {
+	margin: 0;
+}
+
+/* Die Nummer in der Statusleiste trug die Markenfarbe. Das ging auf
+   Schwarz; auf Creme wäre sie mit 1,24:1 unsichtbar. Sie steht jetzt in
+   der starken Schriftfarbe, und die Markenfarbe liegt als Markierung
+   dahinter — dieselbe Mechanik wie überall sonst: Gelb ist Fläche, nie
+   Schrift. */
+
+.statusleiste a {
+	color: var(--wp--preset--color--schrift-stark);
+	text-decoration: none;
+	background-color: var(--wp--preset--color--akzent);
+	box-shadow: 0 0 0 0.3em var(--wp--preset--color--akzent);
+	border-radius: 2px;
+}
+
+.statusleiste a:hover {
+	background-color: var(--wp--preset--color--akzent-tief);
+	box-shadow: 0 0 0 0.3em var(--wp--preset--color--akzent-tief);
+}
+
+/* --- Die Telefonnummer als Anzeigenzeile -------------------------------
+   Sie stand in der kleinsten Stufe des Systems (13 px, gesperrt, Versalien)
+   und war damit die schwerste Zeile der Seite — einhändig, im Dunkeln, in
+   genau dem Moment, in dem gehandelt werden soll. */
+
+/* Sicherheitsnetz: jeder Verweis auf einer Markenfläche, der nicht schon
+   ein eigenes Feld hat, kippt auf die Grundfarbe. Sonst wiederholt sich
+   der Gelb-auf-Gelb-Fehler beim nächsten Baustein. */
+
+.auf-akzent a:not(.wp-block-button__link),
+.has-akzent-background-color a:not(.wp-block-button__link) {
+	color: var(--ton-auf-akzent);
+}
+
+
+/* --- Die Nummer ist die Schrift ----------------------------------------
+   Bis zum Umbau am 2026-08-17 war die Telefonnummer ein Feld von 190 px
+   Breite unter einer Überschrift von 68 px — der Satz über der Handlung
+   war größer als die Handlung. Jetzt trägt sie die Schlussbühne allein:
+   ein Element, über die volle Breite, das größte der Seite.
+
+   Sie steht als gelbe Schrift, nicht als gelbe Fläche. Das ist die eine
+   Stelle, an der das erlaubt ist — der Grund ist schwarz. Auf hellem
+   Grund hätte Gelb als Schriftfarbe 1,24:1 (siehe PRODUCT.md). */
+
+.auf-buehne a.ruf,
+.has-buehne-background-color a.ruf {
+	display: block;
+	margin-top: clamp(1.25rem, 2.5vw, 2rem);
+	color: var(--wp--preset--color--akzent);
+	text-decoration: none;
+}
+
+/* Fläche und Unterstreichung sitzen am Span, nicht am Verweis: die Maße
+   sind in `em` geschrieben und sollen sich auf die Schriftgröße der Nummer
+   beziehen, nicht auf die 16 px, die der Verweis erbt. Am Verweis wären
+   0,16em rund 2,5 px — ein Rand, den niemand sieht. Und die Unterstreichung
+   eines inline-block-Kindes zeichnet das Elternelement ohnehin nicht. */
+
+.ruf-nummer {
+	display: inline-block;
+	max-width: 100%;
+	padding: 0.06em 0.14em 0.1em;
+	margin-inline-start: -0.14em;
+	border-radius: var(--radius-flaeche);
+	text-decoration: underline;
+	text-decoration-thickness: 0.035em;
+	text-underline-offset: 0.12em;
+	transition: background-color 0.18s ease, color 0.18s ease;
+	font-family: var(--wp--preset--font-family--schild);
+	font-weight: 800;
+	font-size: clamp(2.5rem, 12vw, 9.5rem);
+	line-height: 0.92;
+	letter-spacing: -0.035em;
+	font-variant-numeric: tabular-nums;
+	/* Bewusst KEIN white-space: nowrap. Dies ist ein Themebaustein: was für
+	   „0178 5184291" passt, muss auch für „+49 (0) 2241 123456" passen, und
+	   eine Zeile, die nicht umbrechen darf, schiebt auf 360 px die ganze
+	   Seite seitlich weg. Umbrochen wird an den Leerzeichen, also an den
+	   Gruppen, in denen die Nummer ohnehin gelesen wird. `anywhere` ist der
+	   letzte Ausweg für eine Nummer ganz ohne Leerzeichen — hässlich, aber
+	   immer noch besser als waagerechtes Scrollen. */
+	overflow-wrap: anywhere;
+}
+
+/* Beim Überfahren wird aus der Schrift die Fläche: gelber Grund, schwarze
+   Ziffern — die Mechanik des Schilds an der Fassade, einmal ausgelöst.
+   Dann ohne Unterstreichung; die Fläche sagt es deutlicher. */
+
+.auf-buehne a.ruf:hover .ruf-nummer,
+.auf-buehne a.ruf:focus-visible .ruf-nummer,
+.has-buehne-background-color a.ruf:hover .ruf-nummer,
+.has-buehne-background-color a.ruf:focus-visible .ruf-nummer {
+	background-color: var(--wp--preset--color--akzent);
+	color: var(--ton-auf-akzent);
+	text-decoration-color: transparent;
+}
+
+/* Wer „weniger Bewegung" eingestellt hat, bekommt den Wechsel sofort statt
+   über 0,18 s — die Aussage bleibt, das Überblenden fällt weg. */
+@media (prefers-reduced-motion: reduce) {
+	.ruf-nummer {
+		transition: none;
+	}
+}
+
+
+/* --- Der Satz unter der Nummer -----------------------------------------
+   Fließtext-Zeilenhöhe (1,68) ist auf 22 px zu viel — die Zeilen treiben
+   auseinander und der Absatz zerfällt. Und auf kurzem Maß trennt der
+   Browser dauernd Silben; im wichtigsten Satz der Seite stand
+   „eintei-len". Beides hier abgestellt.
+
+   Die max-width wirkt nur, weil der Absatz in `.handlung` liegt und die
+   Gruppe im normalen Fluss steht. Als direktes Kind der constrained-Bühne
+   würde er von `margin-inline: auto !important` mittig gesetzt. */
+
+.ruf-satz {
+	/* 32em, nicht 36: der Satz lief sonst breiter als die Nummer darüber und
+	   nahm ihr den Vorrang. Die Handlung ist das breiteste Element. */
+	margin-top: clamp(1.5rem, 3vw, 2.25rem);
+	max-width: 32em;
+	line-height: 1.35;
+	letter-spacing: -0.005em;
+	hyphens: none;
+}
+
+
+/* --- Zeiten und Anfahrt unter der Handlung -----------------------------
+   Zwei Felder, nicht drei. Die dritte Spalte („Ohne Termin — Sie sind
+   ebenso willkommen") war Füllmaterial in Spaltenform; der Hinweis steht
+   jetzt als Halbsatz im Fließtext darüber. */
+
+.handlung-fuss {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+	/* Zeilenabstand größer als Spaltenabstand: auf dem Telefon stehen die
+	   beiden Felder untereinander, und dort trennt nur der Abstand sie.
+	   Mit dem Spaltenmaß klebte „Anfahrt" an „Sonntag geschlossen". */
+	gap: var(--wp--preset--spacing--50) var(--wp--preset--spacing--50);
+	margin-top: clamp(2.5rem, 5vw, 4rem);
+	padding-top: var(--wp--preset--spacing--40);
+	border-top: 1px solid currentColor;
+}
+
+/* Die Gruppen im Raster tragen sonst den globalen blockGap als Rand und
+   schieben die Rasterzeilen auseinander. */
+.handlung-fuss > * {
+	margin: 0;
+}
+
+/* Nähe richtig herum: die Bezeichnung gehört an ihren Wert. Lag zwischen
+   Bezeichnung und Wert mehr Luft als zwischen zwei Feldern, las man die
+   Bezeichnung zum falschen Absatz. */
+.handlung-fuss .etikett {
+	margin-top: 0;
+	margin-bottom: 0.55rem;
+}
+
+.handlung-fuss .wert {
+	margin: 0;
+	font-size: var(--wp--preset--font-size--large);
+	line-height: 1.3;
+	hyphens: none;
+}
+
+/* Kein Dimmen über opacity — Kleingedrucktes bekommt eine ausdrückliche
+   Farbe, sonst ist der Kontrast nicht prüfbar (PRODUCT.md). */
+.handlung-fuss .gedaempft {
+	margin-top: 0.45rem;
+	font-size: var(--wp--preset--font-size--small);
+	line-height: 1.4;
+}
+
+.handlung-fuss .strich-verweis {
+	margin-top: 0.9rem;
+}
+
+/* --- Mitarbeiterkarte --------------------------------------------------
+   Vorher lagen zwischen Bild, Name, Angaben und Knopf drei fast gleiche
+   Abstände. Gleiche Abstände bilden keine Gruppen: Name und Angaben gehören
+   zusammen, der Knopf ist die Handlung und steht abgesetzt. */
+
+.person-name {
+	margin-top: 1.35rem;
+	margin-bottom: 0;
+}
+
+/* Erfahrung, Sprachen, Schwerpunkte sind das, was diesen Salon von der
+   Kette unterscheidet — und standen auf 13 px als schwächste Zeilen der
+   Karte. Auf Fließtextgröße gehoben, Zeilenhöhe dafür zurückgenommen,
+   damit die drei Zeilen als Block zusammenhalten. */
+
+.person-daten {
+	margin-top: 0.6rem;
+	font-size: var(--wp--preset--font-size--medium);
+	line-height: 1.55;
+	hyphens: none;
+}
+
+.person-aktion {
+	margin-top: 1.75rem;
+}
+
+/* Der Schlusssatz klebte an der Knopfreihe und las sich als Teil der
+   letzten Karte. */
+.nachsatz {
+	border-top: 1px solid var(--wp--preset--color--linie);
+	hyphens: none;
+}
+
+
+/* --- Bewertungen -------------------------------------------------------
+   Note, Sterne und Anzahl stehen als eine Zeile auf gemeinsamer Grundlinie:
+   drei Angaben, die zusammen eine Aussage ergeben, und getrennt keine. */
+
+.bewertung-kopf {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 0.75rem 1.25rem;
+}
+
+.bewertung-kopf > p {
+	margin: 0;
+}
+
+.sterne {
+	width: 8.25rem;
+	height: auto;
+	color: var(--wp--preset--color--schrift);
+	align-self: center;
+}
+
+.bewertung-note {
+	font-family: var(--wp--preset--font-family--schild);
+	font-size: var(--wp--preset--font-size--x-large);
+	font-weight: 800;
+	line-height: 1;
+	color: var(--wp--preset--color--schrift-stark);
+	font-variant-numeric: tabular-nums;
+}
+
+.bewertung-anzahl .stand {
+	display: block;
+	margin-top: 0.3rem;
+	/* Nicht mit opacity dimmen. Auf der dunklen Fläche kam das hin; auf
+	   Creme mischt dieselbe Deckkraft ins Papier und ergab 3,14:1. Eine
+	   ausdrückliche Farbe ist messbar, eine Deckkraft nur im Zusammenspiel
+	   mit dem, was zufällig dahinter liegt. */
+	color: var(--ton-leise);
+	letter-spacing: 0.08em;
+}
+
+.bewertung-anzahl {
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	hyphens: none;
+}
+
+/* Das Zitat ist der Inhalt, nicht die Dekoration: keine Anführungszeichen
+   als Grafik, kein Kasten. Nur größer gesetzt als der Fließtext und in der
+   helleren Schriftfarbe, damit es aus dem Umfeld heraustritt. */
+
+.zitat {
+	margin: 0;
+	font-size: var(--wp--preset--font-size--large);
+	line-height: 1.45;
+	color: var(--wp--preset--color--schrift-stark);
+	hyphens: none;
+	text-wrap: pretty;
+}
+
+.zitat-quelle {
+	margin-top: 0.85rem;
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	hyphens: none;
+}
+
+/* --- Pflichthinweis ----------------------------------------------------
+   Die Angabe nach § 5b Abs. 3 UWG: ob und wie die Echtheit von Bewertungen
+   geprüft wird. Sie muss lesbar sein, nicht laut — deshalb klein und leicht
+   zurückgenommen, aber nicht unter 0.55 Deckkraft und nicht unter der
+   kleinsten Textgröße. Wer sie wegdimmt, hat sie rechtlich nicht gemacht. */
+
+/* Das Maß begrenzt den Satz. Die Lage entscheidet die Schachtelung im Muster,
+   nicht diese Regel — siehe den Kommentar in patterns/bewertungen.php. */
+.pflichthinweis {
+	max-width: 72ch;
+	padding-top: 1rem;
+	border-top: 1px solid var(--wp--preset--color--linie);
+	font-size: var(--wp--preset--font-size--small);
+	line-height: 1.55;
+	/* Pflichtangabe: gedämpft, aber messbar. Siehe .stand — Deckkraft
+	   statt Farbe ergab hier 4,00:1 und damit einen Befund. */
+	color: var(--ton-leise);
+	hyphens: none;
+	text-wrap: pretty;
+}
+
+/* --- Nur für Screenreader ----------------------------------------------
+   Zusätze, die sehende Nutzer aus dem Zusammenhang lesen und blinde nicht:
+   „öffnet in einem neuen Fenster". Nicht display:none — das nähme es auch
+   dem Screenreader weg. */
+
+.screen-reader-text {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* --- Etikett -----------------------------------------------------------
+   Die kleine gesperrte Versalzeile: Preisangabe, Rubrik, Bezeichnung im Fuß.
+   Bewusst eine Klasse und keine Überschriftenebene.
+
+   Im ersten Aufbau war das ein h5 direkt hinter einem h3 und ein h6 im Fuß
+   hinter h2 — Lighthouse hat die übersprungenen Ebenen zu Recht angemerkt.
+   Der Fehler war nicht das Markup, sondern der Gedanke dahinter: das Aussehen
+   gehört in eine Klasse, die Gliederung in die Ebene. Wer eine Ebene wählt,
+   weil sie klein aussieht, baut die Gliederung für Screenreader kaputt.
+
+   Elementname mit im Selektor, damit die Klasse die Überschriftenregeln aus
+   theme.json sicher schlägt und nicht von der Reihenfolge der Stylesheets
+   abhängt. */
+
+p.etikett,
+h1.etikett,
+h2.etikett,
+h3.etikett,
+h4.etikett,
+h5.etikett,
+h6.etikett {
+	font-family: var(--wp--preset--font-family--text);
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 500;
+	line-height: 1.4;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	hyphens: none;
+}
+
+/* Das hervorgehobene Etikett — „Damen", „Herren", „Fotos folgen".
+   Es trug die Markenfarbe als Schriftfarbe. Auf Schwarz war das die
+   auffälligste Zeile der Seite, auf Creme sind es 1,24:1 und die Zeile
+   verschwindet. Sie liegt jetzt als kleine Marke IN der Farbe — dieselbe
+   Regel wie überall: Gelb ist Fläche, nie Schrift. */
+
+p.etikett-akzent,
+h1.etikett-akzent,
+h2.etikett-akzent,
+h3.etikett-akzent,
+h4.etikett-akzent,
+h5.etikett-akzent,
+h6.etikett-akzent {
+	display: inline-block;
+	padding: 0.3em 0.7em 0.35em;
+	background-color: var(--wp--preset--color--akzent);
+	color: var(--ton-auf-akzent);
+	border-radius: var(--radius-knopf);
+}
+
+/* --- Deutsche Wortungetüme ---------------------------------------------
+   „Öffnungszeiten", „Datenschutzerklärung", „Terminvereinbarung": in einer
+   schmalen Spalte passt so etwas nicht in eine Zeile. Ohne Trennregel
+   schneidet der Browser mitten im Wort ab — im ersten Aufbau stand hier
+   „Klassisch / es Handwerk". hyphens:auto trennt stattdessen nach den Regeln
+   der Sprache; WordPress setzt lang="de-DE", also greift es. */
+
+:where(h1, h2, h3, h4, .wp-block-heading, p, li) {
+	hyphens: auto;
+	overflow-wrap: break-word;
+}
+
+/* Überschriften über mehrere Zeilen gleichmäßig umbrechen statt eine
+   Waise am Ende stehen zu lassen. */
+:where(h1, h2, h3, .wp-block-heading) {
+	text-wrap: balance;
+}
+
+/* --- Tastaturfokus, sichtbar überall ----------------------------------- */
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+	outline: 2px solid var(--wp--preset--color--akzent-tief);
+	outline-offset: 3px;
+}
+
+/* --- Bewegung nur, wenn erwünscht -------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
+
+/* --- Bauteile des neuen Aufbaus ----------------------------------------
+   Bühnentitel, Bandsatz, Preistafel. Hinzugekommen mit dem Umbau auf
+   Bühnen und Bänder am 2026-08-17. */
+
+/* Versalien nur auf den Bühnentiteln und in den Bändern, nicht überall.
+   Die Vorlage spricht durchgehend in Versalien; im Deutschen wird daraus
+   „ÖFFNUNGSZEITEN" und „DATENSCHUTZERKLÄRUNG" — Wörter, die in Versalien
+   auf dem Telefon nicht in eine Zeile passen. Deshalb der Kompromiss:
+   die Aussage laut, der Rest lesbar. */
+
+.buehne-titel {
+	text-transform: uppercase;
+	letter-spacing: -0.015em;
+	line-height: 0.94;
+	text-wrap: balance;
+	max-width: 18ch;
+	hyphens: none;
+}
+
+.buehne-satz {
+	max-width: 46ch;
+	hyphens: none;
+	text-wrap: pretty;
+}
+
+/* Die halbhohe Bühne für einzelne Leistungen: laut genug, um zu tragen,
+   aber nicht so hoch, dass drei davon die Seite zum Katalog machen. */
+.buehne-halb {
+	min-height: 78svh;
+}
+
+.band-satz {
+	max-width: 44ch;
+	color: var(--wp--preset--color--schrift);
+	hyphens: none;
+	text-wrap: pretty;
+}
+
+/* --- Preistafel --------------------------------------------------------
+   Über die volle Breite statt in einer Spalte. Die Gruppenzeile trennt,
+   die Preiszeile trägt. */
+
+.preisgruppe {
+	margin-top: var(--wp--preset--spacing--60);
+	margin-bottom: var(--wp--preset--spacing--30);
+	padding-bottom: 0.5rem;
+	border-bottom: 2px solid var(--wp--preset--color--schrift-stark);
+	font-family: var(--wp--preset--font-family--text);
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 0.14em;
+	color: var(--wp--preset--color--schrift-stark);
+}
+
+.preistafel > .preisgruppe:first-child {
+	margin-top: 0;
+}
+
+/* Auf breiten Schirmen laufen die Positionen zweispaltig — sonst steht
+   eine 1280 px breite Zeile mit vier Wörtern links und einem Preis rechts,
+   und dazwischen zwei Handbreit Nichts. */
+@media (min-width: 900px) {
+	.preistafel {
+		column-count: 2;
+		column-gap: clamp(3rem, 6vw, 6rem);
+	}
+
+	.preiszeile {
+		break-inside: avoid;
+	}
+
+	/* break-inside allein reicht nicht: die Gruppenzeile „Herren" stand
+	   allein am Fuß der ersten Spalte, ihre Positionen in der zweiten.
+	   break-after hält die Überschrift bei dem, was sie überschreibt. */
+	.preisgruppe {
+		break-inside: avoid;
+		break-after: avoid;
+	}
+}
+
+
+/* --- Zeiten und Anfahrt auf der Schlussbühne --------------------------- */
+
+.schlussbuehne .handlung-fuss {
+	border-top-color: rgba(242, 242, 240, 0.22);
+}
+
+/* Alle Etiketten der Schlussbühne, nicht nur die im Fuß: die Zeile über der
+   Nummer ist zwar die Überschrift des Abschnitts, soll ihr aber nicht die
+   Aufmerksamkeit streitig machen. 13 px in #A6A6A2 auf #0D0D0D sind 9,4:1
+   — leise, aber weit über der Grenze. */
+.schlussbuehne .etikett {
+	color: var(--ton-auf-buehne-leise);
+}
+
+
+/* --- Nachträge zum Bühnenaufbau ---------------------------------------
+   Drei Befunde aus dem ersten Durchlauf, alle im Browser gemessen. */
+
+/* 1. Die Bühne liegt im gewöhnlichen Fluss, nicht in constrained.
+      In constrained bekommt JEDES direkte Kind eine max-width und
+      zentrierende Ränder mit !important — auch das absolut positionierte
+      Hintergrundbild. Das Bild war dadurch auf 1280 px begrenzt und
+      zentriert, links und rechts blitzte der helle Grund durch.
+      Derselbe Mechanismus wie bei der Pflichtangabe im Bewertungsteil.
+      Die Begrenzung des Textes übernimmt deshalb hier das Stylesheet. */
+
+.buehne {
+	padding-inline: clamp(1.25rem, 5vw, 4rem);
+}
+
+.buehne > *:not(.buehne-bild) {
+	max-width: 1280px;
+	margin-inline: auto;
+	width: 100%;
+}
+
+/* 2. Die erste Bühne stand auf 100svh und begann unter der klebenden
+      Kopfzeile — zusammen also höher als der Bildschirm, der Knopf lag
+      unter der Falz. Die Kopfzeile wird abgezogen. */
+
+:root {
+	--kopf-hoehe: 4.5rem;
+}
+
+.buehne {
+	min-height: calc(100svh - var(--kopf-hoehe));
+}
+
+.buehne-halb {
+	min-height: calc(78svh - var(--kopf-hoehe));
+}
+
+/* 3. Die Nummer in der Statusleiste war gelb auf gelb.
+      Die Bühnenregel färbt jeden Verweis gelb, die Statusleiste legt Gelb
+      als Fläche darunter — 1,0:1, das Feld war leer. Genau der Fehler, vor
+      dem der Kommentar an `.telefonnummer` warnt, eine Regel weiter unten
+      eingebaut. Deshalb steht die Schriftfarbe hier ausdrücklich und mit
+      genug Gewicht, um die Bühnenregel zu schlagen. */
+
+.buehne .statusleiste a,
+.auf-buehne .statusleiste a,
+.has-buehne-background-color .statusleiste a {
+	color: var(--ton-auf-akzent);
+}
+
+
+/* --- Merkposten zur Spezifität auf der Bühne ---------------------------
+
+   Zweimal stand hier Gelb auf Gelb, beim zweiten Mal aus diesem Grund:
+
+     .auf-buehne a:not(.wp-block-button__link)   → 0,2,1
+     .auf-buehne .telefonnummer                  → 0,2,0
+
+   `:not()` erbt die Spezifität seines Arguments. Die Ausnahmeregel für
+   Knöpfe machte die allgemeine Regel damit **stärker** als die eigene
+   Ausnahme für die Nummer — die Ausnahme lief ins Leere.
+
+   Deshalb schreibt sich jede Ausnahme von der Bühnenregel mit
+   Elementanteil: `.auf-buehne a.ruf` → 0,3,1. Die Regeln für `.ruf`
+   stehen entsprechend weiter oben schon so da. */
+
+/* Der Titel stand mittig statt links: `.buehne-titel` hat eine max-width,
+   und die constrained-Layoutregel zentriert jedes direkte Kind mit
+   max-width per `margin-inline: auto !important`. */
+
+.schlussbuehne .buehne-titel {
+	max-width: none;
+}
+
+
+/* --- Schwarze Kopfzeile ------------------------------------------------
+   Die Kopfzeile lief auf dem hellen Grund und stand damit über der ersten
+   Bühne als heller Streifen — ein Bruch genau an der Stelle, an der die
+   Seite anfangen soll. Schwarz setzt sie auf die Bühne fort.
+
+   Die Umkehrung steht hier und nicht in theme.json: die Kopfzeile ist ein
+   Bauteil, kein Farbschema. Eine Style Variation soll die Palette ändern
+   können, ohne dass jemand die Kopfzeile nachziehen muss. */
+
+.kopf-klebt {
+	background-color: var(--wp--preset--color--buehne);
+	border-bottom-color: rgba(242, 242, 240, 0.14);
+}
+
+.kopf-klebt .marke {
+	color: var(--ton-auf-buehne);
+}
+
+/* Die Navigation trägt in theme.json die starke Schriftfarbe — auf Schwarz
+   wären das 1,1:1. */
+.kopf-klebt .wp-block-navigation,
+.kopf-klebt .wp-block-navigation a,
+.kopf-klebt .wp-block-navigation .wp-block-navigation-item__content {
+	color: var(--ton-auf-buehne);
+}
+
+/* Das Hamburger-Symbol und sein Überlagerungsfenster. */
+.kopf-klebt .wp-block-navigation__responsive-container-open,
+.kopf-klebt .wp-block-navigation__responsive-container-close {
+	color: var(--ton-auf-buehne);
+}
+
+.kopf-klebt .wp-block-navigation__responsive-container.is-menu-open {
+	background-color: var(--wp--preset--color--buehne);
+	color: var(--ton-auf-buehne);
+}
+
+.kopf-klebt .wp-block-navigation__responsive-container.is-menu-open a {
+	color: var(--ton-auf-buehne);
+}
+
+/* Die Sprungmarke liegt über der schwarzen Kopfzeile und behält deshalb
+   ihre gelbe Fläche mit Tinte darauf. */
+
+
+/* --- Galerie „Unsere Arbeiten" -----------------------------------------
+   Eine dunkle Wand mit Bildern. Dunkel, weil damit der Wechsel über die
+   ganze Seite aufgeht — Bühne, Fläche, Bühne, Fläche — und weil Bilder auf
+   Schwarz als Galerie gelesen werden und nicht als Kachelreihe.
+
+   Kein Karussell: es kostet LCP und versteckt die Hälfte der Bilder hinter
+   einer Geste, die auf dem Telefon niemand ausführt. */
+
+.arbeiten-gitter {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	/* Feste Zeilenhöhe statt Inhaltshöhe. Mit `height: 100%` am Bild und
+	   einer Bildunterschrift IM figure rechnete der Browser gegeneinander:
+	   die Kacheln kamen als 632×693 und 308×339 heraus, also weder quadratisch
+	   noch untereinander gleich. Die Zeile gibt jetzt das Maß vor. */
+	grid-auto-rows: clamp(8rem, 21vw, 11rem);
+	gap: clamp(0.5rem, 1.5vw, 1rem);
+	margin-top: var(--wp--preset--spacing--60);
+}
+
+@media (min-width: 900px) {
+	.arbeiten-gitter {
+		grid-template-columns: repeat(4, 1fr);
+		grid-auto-rows: clamp(9rem, 13vw, 13rem);
+	}
+
+	/* Das erste Bild ist das Hauptstück: zwei Spalten, zwei Zeilen. Vier
+	   gleich große Kacheln sind eine Kachelreihe und behaupten, alle
+	   Aufnahmen seien gleich gut. */
+	.arbeiten-gitter > *:first-child {
+		grid-column: span 2;
+		grid-row: span 2;
+	}
+}
+
+.arbeiten-gitter figure {
+	margin: 0;
+	position: relative;
+	overflow: hidden;
+}
+
+.arbeiten-gitter img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+/* Die Bezeichnung liegt IM Bild, nicht darunter. Unter dem Bild bräuchte
+   sie Platz in der Zeile und die Kacheln wären wieder verschieden hoch. */
+.arbeiten-gitter figcaption {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	padding: 2.5rem 0.9rem 0.7rem;
+	background: linear-gradient(to top, rgba(13, 13, 13, 0.88), rgba(13, 13, 13, 0));
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	line-height: 1.25;
+	color: var(--ton-auf-buehne);
+	hyphens: none;
+}
+
+/* Das Band auf der dunklen Wand: Haarlinie und Schrift kippen mit. */
+.auf-buehne .band {
+	border-bottom-color: rgba(242, 242, 240, 0.22);
+}
+
+.auf-buehne .band-name {
+	color: var(--ton-auf-buehne);
+}
+
+.auf-buehne .band-satz {
+	color: var(--ton-auf-buehne-leise);
+}
+
+
+/* Kein Spalt zwischen Kopfzeile und erster Bühne.
+
+   Der globale blockGap (0,75 rem) lag zwischen Vorlagenteil und `main`. Auf
+   hellem Grund fiel er nicht auf; seit die Kopfzeile schwarz ist, stand dort
+   ein 12 px breiter heller Streifen quer über den Bildschirm — genau an der
+   Naht, die verschwinden soll.
+
+   Die Abschnitte bringen ihren Abstand selbst mit, also braucht die oberste
+   Ebene keinen. */
+
+.wp-site-blocks > * {
+	margin-block-start: 0;
+}
+
+/* Und die Trennlinie unter der Kopfzeile entfällt: Kopfzeile und Bühne sind
+   dieselbe Fläche, eine Linie dazwischen behauptet eine Kante, die es nicht
+   gibt. Auf hellen Unterseiten trägt sie weiterhin. */
+.kopf-klebt {
+	border-bottom-width: 0;
+}
+
+.seite-hell .kopf-klebt {
+	border-bottom-width: 1px;
+}

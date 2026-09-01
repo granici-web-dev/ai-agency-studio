@@ -1,0 +1,70 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"title": "Sunshine",
+	"description": "Marke Friseur Sunshine, Troisdorf. Gelb vom Schild an der Fassade, am Foto gemessen: #F0E100. Es liegt als Fläche unter schwarzer Schrift (13,61:1) und trägt niemals selbst Schrift — auf dem cremefarbenen Grund wären das 1,24:1.",
+	"settings": {
+		"color": {
+			"palette": [
+				{
+					"slug": "grund",
+					"color": "#F2F2F0",
+					"name": "Grund"
+				},
+				{
+					"slug": "buehne",
+					"color": "#0D0D0D",
+					"name": "Bühne (dunkel)"
+				},
+				{
+					"slug": "grund-gehoben",
+					"color": "#E7E7E4",
+					"name": "Grund gehoben"
+				},
+				{
+					"slug": "linie",
+					"color": "#D6D6D2",
+					"name": "Linie"
+				},
+				{
+					"slug": "schrift",
+					"color": "#44443C",
+					"name": "Text"
+				},
+				{
+					"slug": "schrift-stark",
+					"color": "#14140F",
+					"name": "Text stark"
+				},
+				{
+					"slug": "akzent",
+					"color": "#F0E100",
+					"name": "Sunshine Gelb"
+				},
+				{
+					"slug": "akzent-tief",
+					"color": "#D9CC00",
+					"name": "Sunshine Gelb tief"
+				}
+			],
+			"duotone": [
+				{
+					"slug": "akzent",
+					"name": "Markenfarbe",
+					"colors": [
+						"#14140F",
+						"#F2F2F0"
+					]
+				},
+				{
+					"slug": "grau",
+					"name": "Grau",
+					"colors": [
+						"#14140F",
+						"#EDEDEA"
+					]
+				}
+			]
+		}
+	}
+}

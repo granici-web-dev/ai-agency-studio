@@ -1,0 +1,105 @@
+# Lokale WordPress-Umgebung zum Bauen und Prüfen des Basis-Themes.
+#
+# Nur zum Entwickeln. Nichts hier ist für einen Kundenbetrieb gedacht: die
+# Zugangsdaten stehen im Klartext, die Datenbank ist nach außen nicht
+# erreichbar, und die Installation lässt sich jederzeit wegwerfen.
+#
+# Kein laufender Fremdkostenpunkt — läuft auf dem eigenen Rechner
+# (.claude/entscheidungen.md, "Kein Server, bis Einnahmen da sind").
+
+name: agentur-wp-lokal
+
+services:
+  db:
+    image: mariadb:11
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: wordpress
+      MARIADB_ROOT_PASSWORD: root
+    volumes:
+      - db-daten:/var/lib/mysql
+    # Bewusst kein ports:-Eintrag. Die Datenbank muss von außen nicht
+    # erreichbar sein, und 5432 ist ohnehin schon belegt.
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  wordpress:
+    image: wordpress:6.8-php8.3-apache
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DEBUG: "1"
+      # Kommt aus der Umgebung, nie aus dieser Datei. Ohne gesetzten Wert
+      # bleibt die Anbindung schlicht aus und die Seite zeigt die von Hand
+      # gepflegten Bewertungen — das ist der gewollte Auslieferungszustand.
+      #
+      # Zum Testen mit echtem Schlüssel:
+      #   export AGENTUR_GOOGLE_PLACES_KEY='…'   (nicht in die Shell-History,
+      #   führendes Leerzeichen vor dem Befehl) und danach neu hochfahren.
+      # Niemals hier eintragen, niemals ins Repository.
+      AGENTUR_GOOGLE_PLACES_KEY: "${AGENTUR_GOOGLE_PLACES_KEY:-}"
+      WORDPRESS_CONFIG_EXTRA: |
+        define( 'AGENTUR_GOOGLE_PLACES_KEY', getenv( 'AGENTUR_GOOGLE_PLACES_KEY' ) ?: '' );
+        define( 'WP_DEBUG_LOG', true );
+        define( 'WP_DEBUG_DISPLAY', false );
+        define( 'DISALLOW_FILE_EDIT', true );
+        define( 'AUTOMATIC_UPDATER_DISABLED', true );
+        // Ohne diese Zeile liest WordPress Muster- und Vorlagendateien des
+        // Themes nur neu ein, wenn sich die Version im style.css ändert —
+        // eine neue Datei in patterns/ taucht sonst schlicht nicht auf, und
+        // weder Cache-Flush noch Transient-Löschen hilft. Kostet eine halbe
+        // Stunde Suche, wenn man es nicht weiß.
+        define( 'WP_DEVELOPMENT_MODE', 'theme' );
+    volumes:
+      - wp-daten:/var/www/html
+      # Das Theme liegt im Repository und wird hereingespiegelt. Änderungen
+      # sind sofort sichtbar, ohne Kopierschritt, der irgendwann vergessen wird.
+      - ../agentur-basis:/var/www/html/wp-content/themes/agentur-basis
+      # Das Betriebsmodul. mu-plugins werden von WordPress ohne Aktivierung
+      # geladen — genau richtig für Dinge, die einen Themewechsel überleben
+      # müssen, und genau falsch für alles, was man abschalten können soll.
+      - ../agentur-mu:/var/www/html/wp-content/mu-plugins
+
+  # Läuft nicht dauerhaft mit, sondern wird für einzelne Befehle gestartet:
+  #   docker compose run --rm wpcli wp <befehl>
+  wpcli:
+    image: wordpress:cli-php8.3
+    user: "33:33"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      AGENTUR_GOOGLE_PLACES_KEY: "${AGENTUR_GOOGLE_PLACES_KEY:-}"
+    volumes:
+      - wp-daten:/var/www/html
+      - ../agentur-basis:/var/www/html/wp-content/themes/agentur-basis
+      # Muss hier genauso hängen wie beim Webserver, sonst kennt die
+      # Kommandozeile die Befehle des Moduls nicht.
+      - ../agentur-mu:/var/www/html/wp-content/mu-plugins
+      # Hilfsskripte für die Kommandozeile. Bewusst außerhalb von
+      # /var/www/html: sie gehören nicht in die Installation und erst recht
+      # nicht ins Theme, das an Kunden ausgeliefert wird.
+      - ./skripte:/opt/skripte
+    entrypoint: ["wp"]
+    command: ["--info"]
+
+volumes:
+  db-daten:
+  wp-daten:

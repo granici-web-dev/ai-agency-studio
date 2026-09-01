@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "google-forms": {
+      "command": "node",
+      "args": ["mcp-servers/google-forms/index.js"]
+    }
+  }
+}

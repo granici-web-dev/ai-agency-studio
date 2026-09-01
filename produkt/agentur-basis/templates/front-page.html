@@ -1,0 +1,18 @@
+<!-- wp:template-part {"slug":"header","tagName":"div","area":"header"} /-->
+
+<!--
+	main trägt hier bewusst kein eigenes Layout. Wäre es "constrained",
+	läge post-content auf 760px fest und die Muster mit alignfull kämen
+	nicht darüber hinaus — sichtbar erst im Browser, nicht im Markup.
+
+	Die Startseite wird aus Mustern zusammengesetzt und trägt deshalb keine
+	Überschrift aus dem Seitentitel: der Titel steht im Hero-Muster, wo er
+	gestaltet ist. Zwei H1 auf einer Seite wären ein Befund in der Prüfung.
+-->
+<!-- wp:group {"tagName":"main","anchor":"inhalt","layout":{"type":"default"}} -->
+<main id="inhalt" class="wp-block-group">
+	<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"div","area":"footer"} /-->

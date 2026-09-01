@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 720" width="720" height="720" role="img" aria-hidden="true">
+  <!--
+    Platzhalter, bis die echten Fotos da sind (§ 22 KUG: Einwilligung nötig).
+
+    Bis zum Wechsel auf die helle Fläche war das ein schwarzes Rechteck. Auf
+    Creme standen dann drei schwarze Blöcke im Abschnitt „Wer Sie bedient"
+    und zogen alle Aufmerksamkeit auf die Stellen, an denen noch nichts ist.
+    Ein Platzhalter soll warten, nicht rufen.
+
+    Quadratisch, weil die Porträts im Muster auf 1:1 beschnitten werden.
+  -->
+  <rect width="720" height="720" fill="#EDEDE1"/>
+  <rect x="1" y="1" width="718" height="718" fill="none" stroke="#DCDCCC" stroke-width="2"/>
+  <g fill="none" stroke="#BFBFA9" stroke-width="6" stroke-linecap="round">
+    <circle cx="360" cy="308" r="74"/>
+    <path d="M232 512a128 116 0 0 1 256 0"/>
+  </g>
+</svg>

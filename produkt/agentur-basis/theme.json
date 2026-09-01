@@ -1,0 +1,491 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"settings": {
+		"appearanceTools": true,
+		"useRootPaddingAwareAlignments": true,
+		"layout": {
+			"contentSize": "760px",
+			"wideSize": "1280px"
+		},
+		"color": {
+			"custom": false,
+			"customDuotone": false,
+			"customGradient": false,
+			"defaultDuotone": false,
+			"defaultGradients": false,
+			"defaultPalette": false,
+			"palette": [
+				{
+					"slug": "grund",
+					"color": "#F2F2F0",
+					"name": "Grund"
+				},
+				{
+					"slug": "buehne",
+					"color": "#0D0D0D",
+					"name": "Bühne (dunkel)"
+				},
+				{
+					"slug": "grund-gehoben",
+					"color": "#E7E7E4",
+					"name": "Grund gehoben"
+				},
+				{
+					"slug": "linie",
+					"color": "#D6D6D2",
+					"name": "Linie"
+				},
+				{
+					"slug": "schrift",
+					"color": "#44443C",
+					"name": "Text"
+				},
+				{
+					"slug": "schrift-stark",
+					"color": "#14140F",
+					"name": "Text stark"
+				},
+				{
+					"slug": "akzent",
+					"color": "#E2E2DE",
+					"name": "Akzent"
+				},
+				{
+					"slug": "akzent-tief",
+					"color": "#CFCFCA",
+					"name": "Akzent tief"
+				}
+			],
+			"duotone": [
+				{
+					"slug": "akzent",
+					"name": "Markenfarbe",
+					"colors": [
+						"#14140F",
+						"#F2F2F0"
+					]
+				},
+				{
+					"slug": "grau",
+					"name": "Grau",
+					"colors": [
+						"#14140F",
+						"#EDEDEA"
+					]
+				}
+			]
+		},
+		"typography": {
+			"customFontSize": false,
+			"fluid": true,
+			"lineHeight": true,
+			"writingMode": false,
+			"fontFamilies": [
+				{
+					"name": "Archivo",
+					"slug": "text",
+					"fontFamily": "Archivo, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif",
+					"fontFace": [
+						{
+							"fontFamily": "Archivo",
+							"fontStyle": "normal",
+							"fontWeight": "400",
+							"fontDisplay": "swap",
+							"unicodeRange": "U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF",
+							"src": [
+								"file:./assets/fonts/archivo-400-latin-ext.woff2"
+							]
+						},
+						{
+							"fontFamily": "Archivo",
+							"fontStyle": "normal",
+							"fontWeight": "400",
+							"fontDisplay": "swap",
+							"unicodeRange": "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD",
+							"src": [
+								"file:./assets/fonts/archivo-400-latin.woff2"
+							]
+						},
+						{
+							"fontFamily": "Archivo",
+							"fontStyle": "normal",
+							"fontWeight": "500",
+							"fontDisplay": "swap",
+							"unicodeRange": "U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF",
+							"src": [
+								"file:./assets/fonts/archivo-500-latin-ext.woff2"
+							]
+						},
+						{
+							"fontFamily": "Archivo",
+							"fontStyle": "normal",
+							"fontWeight": "500",
+							"fontDisplay": "swap",
+							"unicodeRange": "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD",
+							"src": [
+								"file:./assets/fonts/archivo-500-latin.woff2"
+							]
+						}
+					]
+				},
+				{
+					"name": "Archivo Schild",
+					"slug": "schild",
+					"fontFamily": "\"Archivo Schild\", Archivo, \"Arial Narrow\", sans-serif",
+					"fontFace": [
+						{
+							"fontFamily": "Archivo Schild",
+							"fontStyle": "normal",
+							"fontWeight": "800",
+							"fontDisplay": "swap",
+							"unicodeRange": "U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF",
+							"src": [
+								"file:./assets/fonts/archivo-display-latin-ext.woff2"
+							]
+						},
+						{
+							"fontFamily": "Archivo Schild",
+							"fontStyle": "normal",
+							"fontWeight": "800",
+							"fontDisplay": "swap",
+							"unicodeRange": "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD",
+							"src": [
+								"file:./assets/fonts/archivo-display-latin.woff2"
+							]
+						}
+					]
+				}
+			],
+			"fontSizes": [
+				{
+					"slug": "small",
+					"name": "Etikett",
+					"size": "0.8125rem",
+					"fluid": false
+				},
+				{
+					"slug": "medium",
+					"name": "Fließtext",
+					"size": "1.0625rem",
+					"fluid": false
+				},
+				{
+					"slug": "large",
+					"name": "Vorspann",
+					"size": "1.375rem",
+					"fluid": {
+						"min": "1.1875rem",
+						"max": "1.375rem"
+					}
+				},
+				{
+					"slug": "x-large",
+					"name": "Unterüberschrift",
+					"size": "2rem",
+					"fluid": {
+						"min": "1.5rem",
+						"max": "2rem"
+					}
+				},
+				{
+					"slug": "xx-large",
+					"name": "Abschnitt",
+					"size": "2.75rem",
+					"fluid": {
+						"min": "1.75rem",
+						"max": "2.75rem"
+					}
+				},
+				{
+					"slug": "xxx-large",
+					"name": "Titel der Seite",
+					"size": "4.25rem",
+					"fluid": {
+						"min": "2.25rem",
+						"max": "4.25rem"
+					}
+				}
+			]
+		},
+		"spacing": {
+			"customSpacingSize": false,
+			"units": [
+				"px",
+				"rem",
+				"vh",
+				"%"
+			],
+			"spacingSizes": [
+				{
+					"slug": "20",
+					"name": "1 — eng",
+					"size": "0.5rem"
+				},
+				{
+					"slug": "30",
+					"name": "2",
+					"size": "0.75rem"
+				},
+				{
+					"slug": "40",
+					"name": "3",
+					"size": "1rem"
+				},
+				{
+					"slug": "50",
+					"name": "4 — Gruppe",
+					"size": "1.75rem"
+				},
+				{
+					"slug": "60",
+					"name": "5 — Abschnitt",
+					"size": "clamp(2.75rem, 4.5vw, 3.25rem)"
+				},
+				{
+					"slug": "70",
+					"name": "6 — Zäsur",
+					"size": "clamp(4.5rem, 8vw, 6rem)"
+				}
+			]
+		},
+		"border": {
+			"color": true,
+			"radius": true,
+			"style": true,
+			"width": true
+		},
+		"shadow": {
+			"defaultPresets": false
+		},
+		"dimensions": {
+			"aspectRatio": true
+		}
+	},
+	"styles": {
+		"color": {
+			"background": "var(--wp--preset--color--grund)",
+			"text": "var(--wp--preset--color--schrift)"
+		},
+		"typography": {
+			"fontFamily": "var(--wp--preset--font-family--text)",
+			"fontSize": "var(--wp--preset--font-size--medium)",
+			"fontWeight": "400",
+			"lineHeight": "1.68",
+			"letterSpacing": "0.012em"
+		},
+		"spacing": {
+			"padding": {
+				"left": "clamp(1.25rem, 5vw, 4rem)",
+				"right": "clamp(1.25rem, 5vw, 4rem)"
+			},
+			"blockGap": "var(--wp--preset--spacing--30)"
+		},
+		"elements": {
+			"heading": {
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--schild)",
+					"fontWeight": "800",
+					"lineHeight": "1.08",
+					"letterSpacing": "-0.02em"
+				},
+				"color": {
+					"text": "var(--wp--preset--color--schrift-stark)"
+				}
+			},
+			"h1": {
+				"typography": {
+					"fontSize": "var(--wp--preset--font-size--xxx-large)",
+					"lineHeight": "0.98"
+				}
+			},
+			"h2": {
+				"typography": {
+					"fontSize": "var(--wp--preset--font-size--xx-large)",
+					"lineHeight": "1.04"
+				}
+			},
+			"h3": {
+				"typography": {
+					"fontSize": "var(--wp--preset--font-size--x-large)",
+					"lineHeight": "1.12"
+				}
+			},
+			"h4": {
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--text)",
+					"fontSize": "var(--wp--preset--font-size--large)",
+					"fontWeight": "500",
+					"letterSpacing": "0",
+					"lineHeight": "1.3"
+				}
+			},
+			"h5": {
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--text)",
+					"fontSize": "var(--wp--preset--font-size--medium)",
+					"fontWeight": "500",
+					"letterSpacing": "0",
+					"lineHeight": "1.3"
+				}
+			},
+			"h6": {
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--text)",
+					"fontSize": "var(--wp--preset--font-size--small)",
+					"fontWeight": "500",
+					"letterSpacing": "0",
+					"lineHeight": "1.3"
+				}
+			},
+			"link": {
+				"color": {
+					"text": "var(--wp--preset--color--schrift-stark)"
+				},
+				"typography": {
+					"textDecoration": "underline"
+				},
+				":hover": {
+					"color": {
+						"text": "var(--wp--preset--color--schrift)"
+					}
+				},
+				":focus-visible": {
+					"outline": {
+						"color": "var(--wp--preset--color--schrift-stark)",
+						"style": "solid",
+						"width": "2px",
+						"offset": "3px"
+					}
+				}
+			},
+			"button": {
+				"color": {
+					"background": "var(--wp--preset--color--akzent)",
+					"text": "var(--wp--preset--color--schrift-stark)"
+				},
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--text)",
+					"fontSize": "var(--wp--preset--font-size--small)",
+					"fontWeight": "500",
+					"textTransform": "uppercase",
+					"letterSpacing": "0.09em",
+					"textDecoration": "none"
+				},
+				"border": {
+					"radius": "0"
+				},
+				"spacing": {
+					"padding": {
+						"top": "1.05rem",
+						"bottom": "1.05rem",
+						"left": "2rem",
+						"right": "2rem"
+					}
+				},
+				":hover": {
+					"color": {
+						"background": "var(--wp--preset--color--akzent-tief)",
+						"text": "var(--wp--preset--color--schrift-stark)"
+					}
+				},
+				":focus-visible": {
+					"outline": {
+						"color": "var(--wp--preset--color--schrift-stark)",
+						"style": "solid",
+						"width": "2px",
+						"offset": "3px"
+					}
+				}
+			},
+			"caption": {
+				"typography": {
+					"fontSize": "var(--wp--preset--font-size--small)"
+				},
+				"color": {
+					"text": "var(--wp--preset--color--schrift)"
+				}
+			}
+		},
+		"blocks": {
+			"core/separator": {
+				"color": {
+					"text": "var(--wp--preset--color--linie)"
+				}
+			},
+			"core/site-title": {
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--schild)",
+					"fontSize": "var(--wp--preset--font-size--large)",
+					"fontWeight": "800",
+					"letterSpacing": "-0.01em",
+					"textDecoration": "none"
+				},
+				"color": {
+					"text": "var(--wp--preset--color--schrift-stark)"
+				}
+			},
+			"core/navigation": {
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--text)",
+					"fontSize": "var(--wp--preset--font-size--small)",
+					"fontWeight": "500",
+					"textTransform": "uppercase",
+					"letterSpacing": "0.09em"
+				},
+				"elements": {
+					"link": {
+						"color": {
+							"text": "var(--wp--preset--color--schrift-stark)"
+						},
+						"typography": {
+							"textDecoration": "none"
+						},
+						":hover": {
+							"typography": {
+								"textDecoration": "underline"
+							}
+						}
+					}
+				}
+			},
+			"core/quote": {
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--text)",
+					"fontSize": "var(--wp--preset--font-size--large)",
+					"fontWeight": "400",
+					"lineHeight": "1.5"
+				},
+				"color": {
+					"text": "var(--wp--preset--color--schrift-stark)"
+				}
+			},
+			"core/post-title": {
+				"typography": {
+					"fontSize": "var(--wp--preset--font-size--xx-large)"
+				}
+			}
+		}
+	},
+	"templateParts": [
+		{
+			"name": "header",
+			"title": "Kopfzeile",
+			"area": "header"
+		},
+		{
+			"name": "footer",
+			"title": "Fußzeile",
+			"area": "footer"
+		}
+	],
+	"customTemplates": [
+		{
+			"name": "seite-ohne-titel",
+			"title": "Seite ohne Titel",
+			"postTypes": [
+				"page"
+			]
+		}
+	]
+}
